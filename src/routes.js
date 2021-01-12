@@ -10,8 +10,29 @@ routes.get('/products', async (req, res) => {
 	return res.json(products)
 })
 
-routes.get('/', (req, res) => {
-	return res.json({Message: 'Hello from routes'})
+
+routes.post('/products', (req, res) => {
+
+	const productSchema = yup.object().shape({
+		title: yup.string().required(),
+		description: yup.string(),
+		price: yup.number().required(),
+		category: yup.string()
+	}).noUnknown()
+
+	const product = req.body
+
+	productSchema.validate(product)
+		.then(() => {
+			const newProduct = new Product(product)
+
+			newProduct.save()
+
+			return res.json(newProduct)
+		})
+		.catch((err) => {
+			return res.status(400).json({error: 'Incorrect format', message: err.message})
+		})
 })
 
 module.exports = routes
