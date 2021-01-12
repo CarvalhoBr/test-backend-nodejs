@@ -1,0 +1,40 @@
+version: '3'
+
+services: 
+
+  database:
+    container_name: database
+    image: mongo
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    networks: 
+      - api-db
+    ports: 
+      - 27018:27017
+    volumes: 
+      - mongodb-data:/data/db
+  
+  api:
+    container_name: api
+    build: '.'
+    volumes:
+      - .:/home/node/api
+      - ./node_modules:/home/node/api/node_modules
+    depends_on:
+      - database
+    networks:
+      - api-db
+    ports:
+      - '3000:3000'
+      - '9229:9229'
+    links: 
+      - database
+    command: ./wait-for.sh database:27017 -- yarn start
+
+volumes: 
+  mongodb-data:
+
+networks: 
+  api-db:
+    driver: bridge
