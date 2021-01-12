@@ -30,7 +30,7 @@ services:
       - '9229:9229'
     links: 
       - database
-    command: ./wait-for.sh database:27017 -- yarn start
+    command: yarn start
 
 volumes: 
   mongodb-data:
