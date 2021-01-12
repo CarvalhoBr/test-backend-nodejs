@@ -4,7 +4,20 @@ const Product = require('./models/Product')
 
 routes.get('/products', async (req, res) => {
 
-	const products = await Product.find({})
+	const allowedFilters = yup.object().shape({
+		title: yup.string(),
+		category: yup.string()
+	}).noUnknown()
+
+	const filters = req.query
+	console.log(filters)
+
+	allowedFilters.validate(filters, { stripUnknown: false })
+		.catch(err => 
+			res.status(400).json({error: 'Os filtros especificados são inválidos'})
+		)
+
+	const products = await Product.find(filters)
 	console.log(products)
 
 	return res.json(products)
@@ -22,7 +35,7 @@ routes.post('/products', (req, res) => {
 
 	const product = req.body
 
-	productSchema.validate(product)
+	productSchema.validate(product, { stripUnknown: false })
 		.then(() => {
 			const newProduct = new Product(product)
 
