@@ -23,7 +23,6 @@ routes.get('/products', async (req, res) => {
 	return res.json(products)
 })
 
-
 routes.post('/products', (req, res) => {
 
 	const productSchema = yup.object().shape({
@@ -46,6 +45,15 @@ routes.post('/products', (req, res) => {
 		.catch((err) => {
 			return res.status(400).json({error: 'Incorrect format', message: err.message})
 		})
+})
+
+routes.put('/products/category', async (req, res) => {
+	const { id, category } = req.body
+
+	const product = await Product.updateOne({ _id: id }, {$set: { category }})
+
+	return res.json(product)
+
 })
 
 module.exports = routes
