@@ -81,4 +81,11 @@ routes.put('/products/:id', (req, res) => {
 
 })
 
+routes.delete('/products/:id', (req, res) => {
+	const { id } = req.params
+
+	return Product.deleteOne({_id: id})
+		.then(data => res.json(data))
+		.catch(() => res.status(500).json({erro: 'Não foi possível processar sua solicitação'}))
+})
 module.exports = routes
