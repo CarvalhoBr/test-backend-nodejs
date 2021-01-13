@@ -56,4 +56,29 @@ routes.put('/products/category', async (req, res) => {
 
 })
 
+routes.put('/products/:id', (req, res) => {
+	const allowedParameters = yup.object().shape({
+		title: yup.string(),
+		description: yup.string(),
+		price: yup.number(),
+		category: yup.string()
+	}).noUnknown()
+
+	const params = req.body
+	const { id } = req.params
+
+	allowedParameters.validate(params, { stripUnknown: false })
+		.then(()  => {
+			return Product.updateOne({_id: id}, {$set: params})
+				.then(data => res.json(data))
+		})
+		.catch(err => 
+			res.status(400).json({
+				erro: err.type,
+				message: err.message
+			})
+		)
+
+})
+
 module.exports = routes
