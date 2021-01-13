@@ -10,7 +10,6 @@ const productsController = {
 		}).noUnknown()
 	
 		const filters = req.query
-		console.log(filters)
 	
 		allowedFilters.validate(filters, { stripUnknown: false })
 			.catch(err => 
@@ -18,7 +17,6 @@ const productsController = {
 			)
 	
 		const products = await Product.find(filters)
-		console.log(products)
 	
 		return res.json(products)
 	},
