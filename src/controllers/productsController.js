@@ -32,24 +32,23 @@ const productsController = {
 		const product = req.body
 	
 		productSchema.validate(product, { stripUnknown: false })
-			.then(() => {
-				const newProduct = new Product(product)
+		.catch((err) => {
+			return res.status(400).json({error: 'Incorrect format', message: err.message})
+		})
 	
-				newProduct.save()
-	
-				return res.json(newProduct)
-			})
-			.catch((err) => {
-				return res.status(400).json({error: 'Incorrect format', message: err.message})
-			})
+		const newProduct = new Product(product)
+		newProduct.save()
+
+		return res.json({criado: newProduct})
+
 	},
 
 	async updateCategory(req, res){
 		const { id, category } = req.body
 
-		const product = await Product.updateOne({ _id: id }, {$set: { category }})
-	
-		return res.json(product)
+		const product = await Product.findByIdAndUpdate({_id: id}, {$set: {category}})
+
+		return res.json({modificado: product})
 	},
 
 	async update(req, res){
@@ -65,8 +64,8 @@ const productsController = {
 	
 		allowedParameters.validate(params, { stripUnknown: false })
 			.then(()  => {
-				return Product.updateOne({_id: id}, {$set: params})
-					.then(data => res.json(data))
+				return Product.findByIdAndUpdate({_id: id}, {$set: params})
+					.then(data => res.json({modificado: data}))
 			})
 			.catch(err => 
 				res.status(400).json({
@@ -79,8 +78,8 @@ const productsController = {
 	async destroy(req, res){
 		const { id } = req.params
 
-		return Product.deleteOne({_id: id})
-			.then(data => res.json(data))
+		return Product.findOneAndDelete({_id: id})
+			.then(data => res.json({deletado: data}))
 			.catch(() => res.status(500).json({erro: 'Não foi possível processar sua solicitação'}))
 	}
 }
